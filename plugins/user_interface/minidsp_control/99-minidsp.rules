@@ -1,0 +1,2 @@
+# MiniDSP 2x4HD
+ATTR{idVendor}=="2752", ATTR{idProduct}=="0011", MODE="660", GROUP="plugdev"
