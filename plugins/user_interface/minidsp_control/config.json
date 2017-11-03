@@ -1,3 +1,6 @@
 {
- 
+  "inputplay": {
+    "type": "boolean",
+    "value": true
+  }
 }

@@ -3,6 +3,7 @@
 var libQ = require('kew');
 var fs=require('fs-extra');
 var config = new (require('v-conf'))();
+var socket = require('socket.io-client').connect('http://localhost:3000');
 var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 var spawn = require('child_process').spawn;
@@ -17,10 +18,8 @@ function minidspControl(context) {
     this.commandRouter = this.context.coreCommand;
     this.logger = this.context.logger;
     this.configManager = this.context.configManager;
-
+    this.inputTimeout = null;
 }
-
-
 
 minidspControl.prototype.onVolumioStart = function()
 {
@@ -41,10 +40,6 @@ minidspControl.prototype.onStart = function() {
         cwd: __dirname + "/node_modules/minidsp-control"
     });
 
-    self.process.stdout.on('data', (data) => {
-        self.logger.info("minidsp-control info: " + data);
-    });
-
     self.process.stderr.on('data', (data) => {
         self.logger.warn("minidsp-control warn: " + data);
     });
@@ -56,6 +51,14 @@ minidspControl.prototype.onStart = function() {
     self.process.on('exit', () => {
         self.logger.info("minidsp-control closed");
         new fourteensegment(0x70, 1).clear();
+    });
+
+    socket.on('pushState', function (state) {
+        if (state.status == 'play') {
+            if (self.config.get('inputplay')) {
+                fs.writeFileSync("/tmp/MINIDSP-CONTROL", "source-usb");
+            }
+        }
     });
 
     // Once the Plugin has successfull started resolve the promise
@@ -86,6 +89,10 @@ minidspControl.prototype.onRestart = function() {
 
 // Configuration Methods -----------------------------------------------------------------------------
 
+minidspControl.prototype.getConfigurationFiles = function() {
+	return ['config.json'];
+};
+
 minidspControl.prototype.getUIConfig = function() {
     var defer = libQ.defer();
     var self = this;
@@ -97,8 +104,7 @@ minidspControl.prototype.getUIConfig = function() {
         __dirname + '/UIConfig.json')
         .then(function(uiconf)
         {
-
-
+            uiconf.sections[0].content[0].value = self.config.get('inputplay');
             defer.resolve(uiconf);
         })
         .fail(function()
@@ -108,7 +114,6 @@ minidspControl.prototype.getUIConfig = function() {
 
     return defer.promise;
 };
-
 
 minidspControl.prototype.setUIConfig = function(data) {
     var self = this;
@@ -123,4 +128,18 @@ minidspControl.prototype.getConf = function(varName) {
 minidspControl.prototype.setConf = function(varName, varValue) {
     var self = this;
     //Perform your installation tasks here
+};
+
+minidspControl.prototype.updateOptions = function (data) {
+    var self = this;
+
+    self.config.set('inputplay', data['inputplay']);
+    self.commandRouter.pushToastMessage('success', "Configuration Update", "MiniDSP 2x4 HD configuration updated");
+
+    return libQ.resolve();
+};
+
+minidspControl.prototype.switchInput = function (data) {
+    fs.writeFileSync("/tmp/MINIDSP-CONTROL", "source-" + data);
+    return libQ.resolve();
 };
