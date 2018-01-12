@@ -4,8 +4,11 @@
   "PLAYBACK_OPTIONS":"Playback Options",
   "SWITCH_ON_PLAY_DOC":"Switches the input to USB whenever Volumio playback begins.",
   "SWITCH_ON_PLAY":"Switch Input on Play",
-  "SWITCH_INPUT": "Switch Input",
+  "CONTROLS": "Volume & Source Selection",
   "SWITCH_TO_ANALOG": "Analog",
   "SWITCH_TO_TOSLINK": "Toslink",
-  "SWITCH_TO_USB": "USB"
+  "SWITCH_TO_USB": "USB",
+  "UPDATE_VOLUME": "Update Volume",
+  "VOLUME_INPUT": "Master Gain (dB)",
+  "VOLUME_INPUT_PLACEHOLDER": "-17.5"
 }

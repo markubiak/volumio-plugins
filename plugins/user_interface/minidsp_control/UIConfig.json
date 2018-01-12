@@ -26,10 +26,17 @@
     ]
   },
   {
-    "id": "section_minidsp_input",
+    "id": "section_minidsp_controls",
     "element": "section",
-    "label": "TRANSLATE.SWITCH_INPUT",
+    "label": "TRANSLATE.CONTROLS",
     "icon": "fa-plug",
+    "onSave": {"type": "controller", "endpoint": "user_interface/minidsp_control", "method": "updateVolume"},
+    "saveButton": {
+      "label": "TRANSLATE.UPDATE_VOLUME",
+      "data": [
+        "volume"
+      ]
+    },
     "content": [
     {
       "id": "switchaux",
@@ -48,6 +55,15 @@
       "element": "button",
       "label": "TRANSLATE.SWITCH_TO_USB",
       "onClick": {"type": "emit", "message": "callMethod", "data": {"endpoint": "user_interface/minidsp_control", "method": "switchInput", "data": "usb"}}
+    },
+    {
+      "id": "volume",
+      "element": "input",
+      "type": "text",
+      "label": "TRANSLATE.VOLUME_INPUT",
+      "attributes": [
+        {"placeholder": "TRANSLATE.VOLUME_INPUT_PLACEHOLDER"}, {"maxlength": 6}
+      ]
     }
     ]
   }

@@ -139,6 +139,20 @@ minidspControl.prototype.updateOptions = function (data) {
     return libQ.resolve();
 };
 
+minidspControl.prototype.updateVolume = function (data) {
+    var self = this;
+
+    var newvol = Number(data['volume']);
+    if (newvol > -128 && newvol <= 0) {
+        fs.writeFileSync("/tmp/MINIDSP-CONTROL", "volume-set " + newvol);
+        return libQ.resolve();
+    } else {
+        self.commandRouter.pushToastMessage('error', "Volume Update", "Volume was invalid; please enter a number in the range -127 to 0 without any units (dB)");
+        return libQ.reject(new Error());
+    }
+
+};
+
 minidspControl.prototype.switchInput = function (data) {
     fs.writeFileSync("/tmp/MINIDSP-CONTROL", "source-" + data);
     return libQ.resolve();
